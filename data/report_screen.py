@@ -12,3 +12,4 @@ def show_flare_report(report):
     text.insert("1.0", report)
 
     window.mainloop()
+

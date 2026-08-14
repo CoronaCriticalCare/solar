@@ -146,10 +146,8 @@ def analyze_flares(data):
 
         if flare["linkedEvents"]:
             report += "(CME):         Yes\n"
-            report += "(SEP):         Yes\n"
         else:
             report += "(CME):         No\n"
-            report += "(SEP):         No\n"
 
         report += "-" * 70 + "\n"
 

@@ -1,20 +1,35 @@
 from services.analyzer import analyze_flares, flare_tracker
-from api.nasa import get_solar
+from services.apod import show_pic_day
+from api.nasa import get_solar, get_apod
 from data.report_screen import show_flare_report
-
 
 def main():
 
     flare_tracker(get_solar())
-    
-    choice = input("Would you like the Solar Flare Report for the past 30 days? (y/n): ")
-    if choice.lower() == "y":
-        flares = get_solar()
-        report = analyze_flares(flares)
-        show_flare_report(report)
-    else:
-        print("Thank you for tracking!")
-        
+
+    while True:
+        while True:
+            choice = input("Would you like the Solar Flare Report for the past 30 days? (y/n): ").strip().lower()
+            if choice == "y":
+                flares = get_solar()
+                report = analyze_flares(flares)
+                show_flare_report(report)
+                break
+            if choice == "n":
+                print("Skipping the report...")
+                break
+            print("Please enter 'y' or 'n'.")
+
+        while True:
+            choice = input("Would you like to see today's Picture of the day? (y/n): ").strip().lower()
+            if choice == "y":
+                show_pic_day(get_apod())
+                break
+            if choice == "n":
+                print("Skipping the Picture of the Day...")
+                return
+            print("Please enter 'y' or 'n'.")
+
 
 if __name__ == "__main__":
     main()
