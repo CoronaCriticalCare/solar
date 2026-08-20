@@ -13,3 +13,5 @@ def show_flare_report(report):
 
     window.mainloop()
 
+
+

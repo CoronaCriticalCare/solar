@@ -1,5 +1,6 @@
 import threading
 import webbrowser
+import multiprocessing
 
 from services.analyzer import analyze_flares, flare_tracker
 from services.apod import show_pic_day
@@ -24,6 +25,15 @@ def start_dashboard():
 
     webbrowser.open("http://127.0.0.1:8050")
 
+def start_report():
+    data = get_solar()
+    report = analyze_flares(data)
+    process = multiprocessing.Process(
+        target=show_flare_report,
+        args=(report,)
+    )
+    process.start()
+
 def main():
 
     flare_tracker(get_solar())
@@ -36,6 +46,7 @@ def main():
                 print("Starting server: \n")
                 start_dashboard()
                 break
+
             if choice == "n":
                 print("Skipping Dashboard...")
                 break
@@ -43,10 +54,8 @@ def main():
         while True:
             choice = input("Would you like the Solar Flare Report for the past 30 days? (y/n): ").strip().lower()
             if choice == "y":
-                flares = get_solar()
-                report = analyze_flares(flares)
-                show_flare_report(report)
-                break
+                start_report()
+                break            
             if choice == "n":
                 print("Skipping the report...")
                 break
@@ -57,6 +66,7 @@ def main():
             if choice == "y":
                 show_pic_day(get_apod())
                 break
+
             if choice == "n":
                 print("Skipping the Picture of the Day...")
                 return
@@ -64,4 +74,5 @@ def main():
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     main()
