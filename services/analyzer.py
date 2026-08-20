@@ -1,6 +1,16 @@
 from datetime import datetime
 
 
+def get_flare_classes(data):
+    classes = []
+
+    for event in data:
+        class_type = event.get("classType")
+        if class_type:
+            classes.append(class_type[0])
+
+    return classes
+
 def flare_strength(class_type):
     class_letter = class_type[0]
     magnitude = float(class_type[1:])
