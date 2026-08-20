@@ -10,7 +10,7 @@ def show_pic_day(pic_day):
     window.geometry("800x600")
 
     if pic_day and pic_day.get("media_type") == "image":
-        image_url = pic_day["hdurl"]
+        image_url = pic_day["url"]
 
         response = requests.get(image_url)
         response.raise_for_status()

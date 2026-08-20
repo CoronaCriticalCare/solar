@@ -1,4 +1,5 @@
 import threading
+import webbrowser
 
 from services.analyzer import analyze_flares, flare_tracker
 from services.apod import show_pic_day
@@ -8,19 +9,37 @@ from app import app
 
 
 def run_dashboard():
-    app.run(debug=True, use_reloader=False)
+    app.run(
+        debug=True,
+        use_reloader=False
+    )
+
+def start_dashboard():
+    dashboard_thread = threading.Thread(
+        target=run_dashboard,
+        daemon=True
+    )
+
+    dashboard_thread.start()
+
+    webbrowser.open("http://127.0.0.1:8050")
+
 def main():
 
     flare_tracker(get_solar())
 
-    dashboard_thread = threading.Thread(
-            target=run_dashboard,
-            daemon=True
-        )
-
-    dashboard_thread.start()
-
+    
     while True:
+        while True:
+            choice = input("Would you like to use the Solar Dashboard? (y/n): ").strip().lower()
+            if choice == "y":
+                print("Starting server: \n")
+                start_dashboard()
+                break
+            if choice == "n":
+                print("Skipping Dashboard...")
+                break
+
         while True:
             choice = input("Would you like the Solar Flare Report for the past 30 days? (y/n): ").strip().lower()
             if choice == "y":
