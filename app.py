@@ -75,6 +75,17 @@ app.layout = dbc.Container([
                 ])
             ])
         ], width=12)
+    ]),
+
+    dbc.Row([
+        dbc.Col([
+            dbc.Card([ 
+                dbc.CardBody([ 
+                    html.H4("Flare Duration", className="card-title text-center"),
+                    html.Div(id="durations")
+                ])
+            ])
+        ])
     ])
 ])
 
@@ -156,6 +167,51 @@ def update_flare_table(_):
     data = get_solar()
 
     return data
+
+@app.callback(
+    Output("durations", "children"),
+    Input("durations", "id")
+)
+
+def update_duration(_):
+    data = get_solar()
+    stats = duration_stats(data)
+    longest = stats["longest"]["duration"].total_seconds() / 60
+    shortest = stats["shortest"]["duration"].total_seconds() /60
+    average = stats["average"]
+
+    return dbc.Row([
+        dbc.Col(
+            dbc.Card(
+                dbc.CardBody([
+                    html.H4("Longest Flare"),
+                    html.H2(f"{longest:.1f} min")
+                ])
+            ), 
+            width=4
+        ),
+
+        dbc.Col(
+            dbc.Card(
+                dbc.CardBody([
+                    html.H4("Average Flare"),
+                    html.H2(f"{average:.1f} min")
+                ])
+            ),
+            width=4
+        ),
+
+        dbc.Col(
+            dbc.Card(
+                dbc.CardBody([
+                    html.H4("Shortest Flare"),
+                    html.H2(f"{shortest:.1f} min")
+                ])
+            ),
+            width=4
+        ),
+    ])
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -72,25 +72,7 @@ def count_seps(data):
 
     return sep_count
 
-def duration(data):
-    for flare in data:
-        start = datetime.fromisoformat(
-            flare["beginTime"].replace("Z", "+00:00")
-        )
-
-        end = datetime.fromisoformat(
-            flare["endTime"].replace("Z", "+00:00")
-        )
-
-        flare["duration"] = end - start
-
-    longest = max(data, key=lambda flare: flare["duration"])
-    shortest = min(data, key=lambda flare: flare["duration"])
-    
-
-    return longest, shortest
-
-def average_duration(data):
+def duration_stats(data):
     durations = []
 
     for flare in data:
@@ -100,22 +82,33 @@ def average_duration(data):
 
         end = datetime.fromisoformat(
             flare["endTime"].replace("Z", "+00:00")
-        )
+        ) 
 
-        durations.append((end - start).total_seconds())
+        duration = end - start
 
-    seconds = sum(durations) / len(durations)
-    minutes = seconds / 60
+        flare["duration"] = duration
+        durations.append(duration.total_seconds())
 
-    return minutes 
+    longest = max(data, key=lambda flare: flare["duration"])
+    shortest = min(data, key=lambda flare: flare["duration"])
+
+    average_seconds = (sum(durations) / len(durations)) / 60
+
+    return {
+        "longest": longest,
+        "shortest": shortest,
+        "average": average_seconds,
+    }
 
 def flare_tracker(data):
     total_flares = len(data)
     strongest = get_strongest(data)
     cme_count = count_cmes(data)
     sep_count = count_seps(data)
-    longest, shortest = duration(data)
-    average = average_duration(data)
+    stats = duration_stats(data)
+    longest = stats["longest"]
+    shortest = stats["shortest"]
+    average = stats["average"]
     classes = count_classes(data)
 
     print("\n" + "=" * 60)
