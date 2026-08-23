@@ -2,10 +2,11 @@ import threading
 import webbrowser
 import multiprocessing
 
-from services.analyzer import analyze_flares, flare_tracker
+from services.analyzer import *
+from services.cme import cme_report
 from services.apod import show_pic_day
-from api.nasa import get_solar, get_apod
-from data.report_screen import show_flare_report
+from api.nasa import *
+from data.report_screen import *
 from app import app
 
 
@@ -30,6 +31,15 @@ def start_report():
     report = analyze_flares(data)
     process = multiprocessing.Process(
         target=show_flare_report,
+        args=(report,)
+    )
+    process.start()
+
+def start_cme():
+    data = get_cme()
+    report = cme_report(data)
+    process = multiprocessing.Process(
+        target=show_cme_report,
         args=(report,)
     )
     process.start()
@@ -60,6 +70,16 @@ def main():
                 print("Skipping the report...")
                 break
             print("Please enter 'y' or 'n'.")
+
+        while True:
+            choice = input("Would you like the Coronal Mass Ejection Report? (y/n): ").strip().lower()
+            if choice == "y":
+                start_cme()
+                break
+            if choice == "n":
+                print("Skipping CME report...")
+                break
+            print("Pleaser enter 'y' or 'n'.n")
 
         while True:
             choice = input("Would you like to see today's Picture of the day? (y/n): ").strip().lower()

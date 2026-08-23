@@ -13,5 +13,17 @@ def show_flare_report(report):
 
     window.mainloop()
 
+def show_cme_report(report):
+    window = tk.Tk()
+    window.title("Coronal Mass Ejection Report")
+    window.geometry("800x600")
+
+    text = tk.Text(window, wrap="word")
+    text.pack(fill="both", expand=True)
+
+    text.insert("1.0", report)
+
+    window.mainloop()
+
 
 
