@@ -1,3 +1,6 @@
+from services.analyzer import *
+
+
 def cme_report(data):
     report = ""
 
@@ -9,12 +12,17 @@ def cme_report(data):
         report += f"Catalog:              {cme['catalog']}\n"
         report += f"Start time:           {cme['startTime']}\n"
         report += f"Instruments used:     {cme['instruments']}\n"
-        report += f"Active\nRegion:                 {cme['activeRegionNum']}\n"
+        report += f"Active\nRegion:               {cme['activeRegionNum']}\n"
         report += f"Note:                 {cme['note']}\n"
         report += f"Submission Time:      {cme['submissionTime']}\n"
-        report += f"CME Analyses:         {cme['cmeAnalyses']}\n"
+        
         report += f"Linked Events:        {cme['linkedEvents']}\n"
         report += f"Notifications:        {cme['sentNotifications']}\n"
+
+        if cme["cmeAnalyses"]:
+            report += "(Analysis):           Yes\n"
+        else:
+            report += "(Analysis):           No\n"
 
         report += "-" * 70 + "\n"
 

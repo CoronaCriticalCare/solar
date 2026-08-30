@@ -1,4 +1,6 @@
 from datetime import datetime
+from services.cme import *
+from api.nasa import *
 
 
 def get_flare_classes(data):
@@ -100,8 +102,47 @@ def duration_stats(data):
         "average": average_seconds,
     }
 
+def actual_flare(flares, cmes):
+    if not flares or not cmes:
+        return []
+
+    matched_ids = set()
+
+    for cme in cmes:
+        linked_events = cme.get("linkedEvents") or []
+
+        for event in linked_events:
+            activity_id = event.get("activityID")
+
+            if activity_id:
+                matched_ids.add(activity_id)
+    real = []
+    seen = set()
+
+    for flare in flares:
+        flare_id = flare.get("flrID")
+
+        if not flare_id:
+            continue
+
+        if flare_id in matched_ids and flare_id not in seen:
+            real.append(flare)
+            seen.add(flare_id)
+
+    return real    
+
+def real_count(data):
+    cme_data = get_cme()
+
+    if not cme_data:
+        return []
+
+    return actual_flare(data, cme_data)
+
 def flare_tracker(data):
     total_flares = len(data)
+    real_flares = real_count(data)
+    count_flares = len(real_flares)
     strongest = get_strongest(data)
     cme_count = count_cmes(data)
     sep_count = count_seps(data)
@@ -115,6 +156,7 @@ def flare_tracker(data):
     print("           Solar Flare Tracker")
     print("=" * 60 + "\n")
     print(f"Total Flares:               {total_flares}\n")
+    print(f"Real Flares:                {count_flares}\n")
     print("~" * 25 + "\n")
     print(f"A-Class:    {classes['A']}\n")
     print(f"B-Class:    {classes['B']}\n")
@@ -137,20 +179,26 @@ def analyze_flares(data):
     report += "          Solar Flare Report\n"
     report += "=" * 70 + "\n"
     for flare in data:
-        report += f"Flare ID:      {flare['flrID']}\n"
-        report += f"Class:         {flare['classType']}\n"
-        report += f"Started at     {flare['beginTime']}\n"
-        report += f"Peaked at      {flare['peakTime']}\n"
-        report += f"Ended at       {flare['endTime']}\n"
-        report += f"Location:      {flare['sourceLocation']}\n"
-        report += f"Active\nRegion:        {flare['activeRegionNum']}\n"
-        report += f"Notes:         {flare['note']}\n"
-        report += f"Submitted on:  {flare['submissionTime']}\n"
+        report += f"Flare ID:           {flare['flrID']}\n"
+        report += f"Catalog:            {flare['catalog']}\n"
+        report += f"Instruments:        {flare['instruments']}\n"
+        report += f"Started at          {flare['beginTime']}\n"
+        report += f"Peaked at           {flare['peakTime']}\n"
+        report += f"Ended at            {flare['endTime']}\n"
+        report += f"Class:              {flare['classType']}\n"
+        report += f"Location:           {flare['sourceLocation']}\n"
+        report += f"Active\nRegion:             {flare['activeRegionNum']}\n"
+        report += f"Notes:              {flare['note']}\n"
+        report += f"Submitted on:       {flare['submissionTime']}\n"
+        report += f"Version ID:         {flare['versionId']}\n"
+        report += f"Link:               {flare['link']}\n"
+        report += f"Notification:       {flare['sentNotifications']}\n"
 
         if flare["linkedEvents"]:
-            report += "(CME):         Yes\n"
+            report += "(CME):              Yes\n"
         else:
-            report += "(CME):         No\n"
+            report += "(CME):              No\n"
+
 
         report += "-" * 70 + "\n"
 

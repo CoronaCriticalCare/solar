@@ -145,18 +145,38 @@ def update_strongest(_):
 
 def update_event_count(_):
     data = get_solar()
+    real = real_count(data)
+    
 
-    return dbc.Card(
-        dbc.CardBody([
-            html.H1(
-                str(len(data)),
-                className="text-center"
-            ),
-            html.H5("Total Linked Events",
-                    className="text-center"
+    return dbc.Row([
+        dbc.Col(
+            dbc.Card(
+                dbc.CardBody([
+                    html.H1(
+                        str(len(data)),
+                        className="text-center"
+                    ),
+                    html.H4("Total Linked Events",
+                            className="text-center"
+                    )
+                ])
             )
-        ])
-    )
+        ),
+
+        dbc.Col(
+            dbc.Card(
+                dbc.CardBody([
+                    html.H1(
+                        str(len(real)),
+                        className="text-center"
+                    ),
+                    html.H4("Flare Count",
+                            className="text-center"
+                    )
+                ])
+            )
+        )
+    ])
 
 @app.callback(
     Output("flare_table", "rowData"),

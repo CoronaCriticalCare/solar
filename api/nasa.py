@@ -1,4 +1,5 @@
 import requests
+import time
 from datetime import datetime, timedelta
 from config import *
 
@@ -48,12 +49,32 @@ def get_cme():
         "api_key": API_KEY
     }
 
-    response = requests.get(CME_URL, params=params)
-    response.raise_for_status()
+    for attempt in range(3):
+        try:
+            response = requests.get(
+                CME_URL,
+                params=params,
+                timeout=30
+            )
 
-    data = response.json()
+            response.raise_for_status()
 
-    if not data:
-        return None
+            data = response.json()
 
-    return data
+            if not data:
+                return []
+
+            return data
+
+        except requests.exceptions.HTTPError as e:
+            if response.status_code == 503:
+                print(f"CME API unavailable. Retry {attempt + 1}/3...")
+                time.sleep(5)
+
+            else:
+                print(f"CME API error: {e}")
+                return None
+
+    print("CME API unavailable after 3 attempts.")
+
+    return None
