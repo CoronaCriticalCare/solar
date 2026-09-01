@@ -12,14 +12,20 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = dbc.Container([
     dbc.Row([
-        dbc.Col(html.H1("Solar Weather"), width=15, className="text-center my-5")
+        dbc.Col(
+            html.H1("Solar Weather"), 
+                width=15, 
+                className="dashboard-title text-center my-5"
+            )
     ]),
 
     dbc.Row([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H4("Classes", className="card-title text-center"),
+                    html.H4("Classes", 
+                            className="class-title text-center"
+                    ),
                     dcc.Graph(id="classification")
                 ])
             ])
@@ -30,7 +36,10 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H4("Strongest Flare", className="card-title text-center"),
+                    html.H4(
+                        "Strongest Flare",
+                        className="strongest-title text-center"
+                    ),
                     html.Div(id="strongest")
                 ])
             ])
@@ -42,7 +51,10 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H4("Events for the past 30 days", className="card-title text-center"),
+                    html.H4(
+                        "Events for the past 30 days", 
+                        className="event-title text-center"
+                    ),
                     html.Div(id="event_count")
                 ])
             ])
@@ -53,7 +65,10 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H4("Flare Information", className="card-title text-center"),
+                    html.H4(
+                        "Flare Information", 
+                        className="info-title text-center"
+                    ),
                     dag.AgGrid(
                         id="flare_table",
                         columnDefs=[
@@ -81,7 +96,10 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Card([ 
                 dbc.CardBody([ 
-                    html.H4("Flare Duration", className="card-title text-center"),
+                    html.H4(
+                        "Flare Duration", 
+                        className="duration-title text-center"
+                    ),
                     html.Div(id="durations")
                 ])
             ])
@@ -89,14 +107,16 @@ app.layout = dbc.Container([
     ])
 ])
 
+data = get_solar()
+real = real_count(data)
+
 @app.callback(
     Output("classification", "figure"),
     Input("classification", "id")
 )
 
 def update_classification(_):
-    data = get_solar()
-    classes = get_flare_classes(data)
+    classes = get_flare_classes(real)
     class_counts = pd.Series(classes).value_counts()
 
     fig = px.bar(
@@ -116,8 +136,7 @@ def update_classification(_):
 )
 
 def update_strongest(_):
-    data = get_solar()
-    strongest = get_strongest(data)
+    strongest = get_strongest(real)
 
     return dbc.Card(
         dbc.Card([
@@ -144,10 +163,6 @@ def update_strongest(_):
 )
 
 def update_event_count(_):
-    data = get_solar()
-    real = real_count(data)
-    
-
     return dbc.Row([
         dbc.Col(
             dbc.Card(
@@ -185,7 +200,6 @@ def update_event_count(_):
 
 def update_flare_table(_):
     data = get_solar()
-
     return data
 
 @app.callback(
@@ -194,8 +208,7 @@ def update_flare_table(_):
 )
 
 def update_duration(_):
-    data = get_solar()
-    stats = duration_stats(data)
+    stats = duration_stats(real)
     longest = stats["longest"]["duration"].total_seconds() / 60
     shortest = stats["shortest"]["duration"].total_seconds() /60
     average = stats["average"]

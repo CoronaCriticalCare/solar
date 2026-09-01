@@ -1,11 +1,14 @@
 from services.analyzer import *
+from api.nasa import *
+
+
 
 
 def cme_report(data):
     report = ""
 
     report += "\n" + "=" * 70 + "\n"
-    report += "         Coronal Mass Ejection Report\n"
+    report += "                       Coronal Mass Ejection Report\n"
     report += "=" * 70 + "\n"
     for cme in data:
         report += f"CME ID:               {cme['activityID']}\n"

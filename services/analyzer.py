@@ -101,7 +101,6 @@ def duration_stats(data):
         "shortest": shortest,
         "average": average_seconds,
     }
-
 def actual_flare(flares, cmes):
     if not flares or not cmes:
         return []
@@ -141,8 +140,6 @@ def real_count(data):
 
 def flare_tracker(data):
     total_flares = len(data)
-    real_flares = real_count(data)
-    count_flares = len(real_flares)
     strongest = get_strongest(data)
     cme_count = count_cmes(data)
     sep_count = count_seps(data)
@@ -153,10 +150,10 @@ def flare_tracker(data):
     classes = count_classes(data)
 
     print("\n" + "=" * 60)
-    print("           Solar Flare Tracker")
+    print("                   Solar Flare Tracker")
     print("=" * 60 + "\n")
     print(f"Total Flares:               {total_flares}\n")
-    print(f"Real Flares:                {count_flares}\n")
+
     print("~" * 25 + "\n")
     print(f"A-Class:    {classes['A']}\n")
     print(f"B-Class:    {classes['B']}\n")
@@ -176,7 +173,7 @@ def analyze_flares(data):
     report = ""
 
     report += "\n" + "=" * 70 + "\n"
-    report += "          Solar Flare Report\n"
+    report += "                         Solar Flare Report\n"
     report += "=" * 70 + "\n"
     for flare in data:
         report += f"Flare ID:           {flare['flrID']}\n"
