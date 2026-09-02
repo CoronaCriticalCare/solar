@@ -1,9 +1,8 @@
 import threading
 import webbrowser
-import multiprocessing
 
 from services.analyzer import *
-from services.cme import cme_report
+from services.cme import start_cme
 from services.apod import show_pic_day
 from api.nasa import *
 from data.report_screen import *
@@ -25,24 +24,6 @@ def start_dashboard():
     dashboard_thread.start()
 
     webbrowser.open("http://127.0.0.1:8050")
-
-def start_report():
-    data = get_solar()
-    report = analyze_flares(data)
-    process = multiprocessing.Process(
-        target=show_flare_report,
-        args=(report,)
-    )
-    process.start()
-
-def start_cme():
-    data = get_cme()
-    report = cme_report(data)
-    process = multiprocessing.Process(
-        target=show_cme_report,
-        args=(report,)
-    )
-    process.start()
 
 def main():
 

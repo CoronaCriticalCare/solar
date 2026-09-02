@@ -1,8 +1,18 @@
+import multiprocessing
+
 from services.analyzer import *
 from api.nasa import *
+from data.report_screen import show_cme_report
 
 
-
+def start_cme():
+    data = get_cme()
+    report = cme_report(data)
+    process = multiprocessing.Process(
+        target=show_cme_report,
+        args=(report,)
+    )
+    process.start()
 
 def cme_report(data):
     report = ""

@@ -1,7 +1,9 @@
+import multiprocessing
+
 from datetime import datetime
 from services.cme import *
 from api.nasa import *
-
+from data.report_screen import *
 
 def get_flare_classes(data):
     classes = []
@@ -137,6 +139,16 @@ def real_count(data):
         return []
 
     return actual_flare(data, cme_data)
+
+def start_report():
+    data = get_solar()
+    report = analyze_flares(data)
+    process = multiprocessing.Process(
+        target=show_flare_report,
+        args=(report,)
+    )
+    process.start()
+
 
 def flare_tracker(data):
     total_flares = len(data)

@@ -107,8 +107,14 @@ app.layout = dbc.Container([
     ])
 ])
 
-data = get_solar()
-real = real_count(data)
+def update_data():
+    data = get_solar()
+    return data
+
+def update_real():
+    data = get_solar()
+    real = real_count(data)
+    return real
 
 @app.callback(
     Output("classification", "figure"),
@@ -116,7 +122,7 @@ real = real_count(data)
 )
 
 def update_classification(_):
-    classes = get_flare_classes(real)
+    classes = get_flare_classes(update_real())
     class_counts = pd.Series(classes).value_counts()
 
     fig = px.bar(
@@ -136,7 +142,7 @@ def update_classification(_):
 )
 
 def update_strongest(_):
-    strongest = get_strongest(real)
+    strongest = get_strongest(update_real())
 
     return dbc.Card(
         dbc.Card([
@@ -168,7 +174,7 @@ def update_event_count(_):
             dbc.Card(
                 dbc.CardBody([
                     html.H1(
-                        str(len(data)),
+                        str(len(update_data())),
                         className="text-center"
                     ),
                     html.H4("Total Linked Events",
@@ -182,7 +188,7 @@ def update_event_count(_):
             dbc.Card(
                 dbc.CardBody([
                     html.H1(
-                        str(len(real)),
+                        str(len(update_real())),
                         className="text-center"
                     ),
                     html.H4("Flare Count",
@@ -208,7 +214,7 @@ def update_flare_table(_):
 )
 
 def update_duration(_):
-    stats = duration_stats(real)
+    stats = duration_stats(update_real())
     longest = stats["longest"]["duration"].total_seconds() / 60
     shortest = stats["shortest"]["duration"].total_seconds() /60
     average = stats["average"]
