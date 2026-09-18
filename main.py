@@ -1,5 +1,6 @@
 import threading
 import webbrowser
+import multiprocessing
 
 from services.analyzer import *
 from services.cme import start_cme

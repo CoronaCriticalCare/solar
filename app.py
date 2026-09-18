@@ -3,6 +3,7 @@ import dash_ag_grid as dag
 import pandas as pd
 import plotly.express as px
 import dash_bootstrap_components as dbc
+from datetime import datetime
 
 from services.analyzer import *
 from api.nasa import *
@@ -75,7 +76,8 @@ app.layout = dbc.Container([
                             {"field": "classType", "headerName": "Class"},
                             {"field": "beginTime", "headerName": "Begin Time"},
                             {"field": "peakTime", "headerName": "Peak Time"},
-                            {"field": "endTime", "headerName": "End Time"}
+                            {"field": "endTime", "headerName": "End Time"},
+                            {"field": "duration", "headerName": "Duration"}
                         ],
                         defaultColDef={
                             "sortable": True,
@@ -199,6 +201,21 @@ def update_event_count(_):
         )
     ])
 
+def format_duration(start, end):
+    if not start or not end:
+        return "Ongoing"
+    
+    start = datetime.fromisoformat(start.replace("Z", "+00:00"))
+    end = datetime.fromisoformat(end.replace("Z", "+00:00"))
+
+    total_minutes = int((end - start).total_seconds() // 60)
+
+    hours, minutes = divmod(total_minutes, 60)
+
+    if hours:
+        return f"{hours}h {minutes}m"
+    return f"{minutes} min"
+
 @app.callback(
     Output("flare_table", "rowData"),
     Input("flare_table", "id")
@@ -206,6 +223,12 @@ def update_event_count(_):
 
 def update_flare_table(_):
     data = get_solar()
+
+    for flare in data:
+        flare["duration"] = format_duration(
+            flare.get("beginTime"),
+            flare.get("endTime")
+        )
     return data
 
 @app.callback(
@@ -218,6 +241,7 @@ def update_duration(_):
     longest = stats["longest"]["duration"].total_seconds() / 60
     shortest = stats["shortest"]["duration"].total_seconds() /60
     average = stats["average"]
+    
 
     return dbc.Row([
         dbc.Col(

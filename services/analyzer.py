@@ -102,7 +102,9 @@ def duration_stats(data):
         "longest": longest,
         "shortest": shortest,
         "average": average_seconds,
+        "durations": durations,
     }
+
 def actual_flare(flares, cmes):
     if not flares or not cmes:
         return []

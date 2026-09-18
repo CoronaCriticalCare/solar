@@ -68,7 +68,7 @@ def get_cme():
 
         except requests.exceptions.HTTPError as e:
             if response.status_code == 503:
-                print(f"CME API unavailable. Retry {attempt + 1}/3...")
+                #print(f"CME API unavailable. Retry {attempt + 1}/3...")
                 time.sleep(5)
 
             else:
